@@ -36,8 +36,15 @@ SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets"
 ]
 
-credentials = Credentials.from_service_account_file(
-    "credenciais.json",
+### credenciais antigas
+
+# credentials = Credentials.from_service_account_file(
+#     "credenciais.json",
+#     scopes=SCOPES
+# )
+
+credentials = Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"],
     scopes=SCOPES
 )
 
