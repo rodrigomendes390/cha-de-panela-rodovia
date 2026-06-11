@@ -63,7 +63,7 @@ def carregar_presentes():
     registros = worksheet.get_all_records()
     return pd.DataFrame(registros)
 
-def reservar_item(row_number, nome, email):
+def reservar_item(row_number, nome):
     worksheet.update(
         f"C{row_number}",
         [["Sim"]]
@@ -208,27 +208,34 @@ for idx, row in df.iterrows():
             if row.get("Imagem"):
 
                 st.markdown(
-                    """
+                    f"""
                     <div style="
-                        height:200px;
-                        overflow:hidden;
+                        height:230px;
+                        width:230px;
+                        margin:auto;
                         display:flex;
-                        justify-content:center;
                         align-items:center;
+                        justify-content:center;
+                        background-color:white;
+                        border-radius:10px;
+                        overflow:hidden;
+                        padding:10px;
                     ">
+                        <img src="{row['Imagem']}"
+                            style="
+                                max-width:100%;
+                                max-height:100%;
+                                object-fit:contain;
+                            ">
+                    </div>
                     """,
                     unsafe_allow_html=True
                 )
 
-                st.image(
-                    row["Imagem"],
-                    use_container_width=True
-                )
-
-                st.markdown(
-                    "</div>",
-                    unsafe_allow_html=True
-                )
+                # st.markdown(
+                #     "</div>",
+                #     unsafe_allow_html=True
+                # )
 
             if row.get("Categoria"):
                 st.caption(
@@ -257,7 +264,7 @@ for idx, row in df.iterrows():
                 st.markdown("<br>", unsafe_allow_html=True)
 
                 st.markdown(
-                    "<div style='height:117px'></div>",
+                    "<div style='height:33px'></div>",
                     unsafe_allow_html=True
                 )
 
@@ -333,8 +340,10 @@ for idx, row in df.iterrows():
                     if not nome.strip():
                         st.error("Informe seu nome.")
 
-                    elif not email.strip():
-                        st.error("Informe seu e-mail.")
+                    ### DESATIVADO do email
+
+                    # elif not email.strip():
+                    #     st.error("Informe seu e-mail.")
 
                     else:
 
@@ -342,8 +351,8 @@ for idx, row in df.iterrows():
 
                         reservar_item(
                             row_number,
-                            nome,
-                            email
+                            nome
+                            # email
                         )
 
                         st.success(
