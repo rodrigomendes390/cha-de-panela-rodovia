@@ -58,20 +58,25 @@ worksheet = spreadsheet.worksheet(WORKSHEET_NAME)
 # FUNÇÕES
 # ==================================================
 
-@st.cache_data(ttl=5)
+@st.cache_data(ttl=60)
 def carregar_presentes():
     registros = worksheet.get_all_records()
     return pd.DataFrame(registros)
 
 def reservar_item(row_number, nome):
-    worksheet.update(
-        f"C{row_number}",
-        [["Sim"]]
-    )
 
+    status = worksheet.acell(
+        f"C{row_number}"
+    ).value
+
+    if str(status).lower() == "sim":
+        raise Exception(
+            "Item já reservado"
+        )
+    
     worksheet.update(
-        f"D{row_number}",
-        [[nome]]
+        f"C{row_number}:D{row_number}",
+        [["Sim", nome]]
     )
 
 # ==================================================
@@ -138,7 +143,7 @@ with col2:
 # FILTRAGEM
 # ==================================================
 
-if busca:
+if len(busca) >= 2:
     df = df[
         df["produtos"]
         .astype(str)
@@ -355,8 +360,8 @@ for idx, row in df.iterrows():
                             # email
                         )
 
-                        st.success(
-                            "Presente reservado!"
+                        st.toast(
+                            "🎁 Presente reservado!"
                         )
 
                         st.cache_data.clear()
