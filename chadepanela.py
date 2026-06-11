@@ -205,6 +205,31 @@ for idx, row in df.iterrows():
 
             st.markdown(f"#### {row["produtos"]}")
 
+            if row.get("Imagem"):
+
+                st.markdown(
+                    """
+                    <div style="
+                        height:200px;
+                        overflow:hidden;
+                        display:flex;
+                        justify-content:center;
+                        align-items:center;
+                    ">
+                    """,
+                    unsafe_allow_html=True
+                )
+
+                st.image(
+                    row["Imagem"],
+                    use_container_width=True
+                )
+
+                st.markdown(
+                    "</div>",
+                    unsafe_allow_html=True
+                )
+
             if row.get("Categoria"):
                 st.caption(
                     f"Categoria: {row['Categoria']}"
@@ -278,10 +303,12 @@ for idx, row in df.iterrows():
                     key=f"nome_{idx}"
                 )
 
-                email = st.text_input(
-                    "Seu e-mail",
-                    key=f"email_{idx}"
-                )
+                ### selecionador do email (DESATIVADO)
+
+                # email = st.text_input(
+                #     "Seu e-mail",
+                #     key=f"email_{idx}"
+                # )
 
                 col_confirmar, col_cancelar = st.columns(2)
 
