@@ -5,6 +5,7 @@ import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
 
+local = False
 
 # ARQUIVO = "C:\\Users\\digo8\\OneDrive\\Documentos\\coisas\\Cha_de_Panela_v1.xlsx"
 
@@ -36,17 +37,21 @@ SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets"
 ]
 
-### credenciais antigas
+############### CREDENCIAL LOCAL #################
 
-# credentials = Credentials.from_service_account_file(
-#     "credenciais.json",
-#     scopes=SCOPES
-# )
+if local:
+    credentials = Credentials.from_service_account_file(
+        "credenciais.json",
+        scopes=SCOPES
+    )
 
-credentials = Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"],
-    scopes=SCOPES
-)
+############### CREDENCIAL GITHUB ################
+
+else:
+    credentials = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=SCOPES
+    )
 
 client = gspread.authorize(credentials)
 
