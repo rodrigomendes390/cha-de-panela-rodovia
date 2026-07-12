@@ -1,55 +1,14 @@
 import base64
+import html
 
-import pandas as pd
 import streamlit as st
 
+from app_backend import load_products, reserve_product
 
 st.set_page_config(
     page_title="Chá de Panela",
     page_icon="🎁",
     layout="wide",
-)
-
-
-PRODUCTS = pd.DataFrame(
-    [
-        {
-            "produtos": "Panela roxa com tampa",
-            "Categoria": "Cozinha",
-            "Preco": "120 - 180",
-            "Imagem": "https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=900&q=80",
-        },
-        {
-            "produtos": "Jogo de panos coloridos",
-            "Categoria": "Lavanderia",
-            "Preco": "40 - 70",
-            "Imagem": "https://images.unsplash.com/photo-1604335399105-a0c585fd81a1?auto=format&fit=crop&w=900&q=80",
-        },
-        {
-            "produtos": "Tigela rosa para misturas",
-            "Categoria": "Cozinha",
-            "Preco": "35 - 60",
-            "Imagem": "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=900&q=80",
-        },
-        {
-            "produtos": "Kit de espatulas",
-            "Categoria": "Utensilios",
-            "Preco": "25 - 50",
-            "Imagem": "https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?auto=format&fit=crop&w=900&q=80",
-        },
-        {
-            "produtos": "Tabua de madeira",
-            "Categoria": "Utensilios",
-            "Preco": "45 - 90",
-            "Imagem": "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=900&q=80",
-        },
-        {
-            "produtos": "Cesto organizador",
-            "Categoria": "Organizacao",
-            "Preco": "55 - 100",
-            "Imagem": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=900&q=80",
-        },
-    ]
 )
 
 
@@ -557,25 +516,24 @@ def inject_style():
     )
 
 
-def reserve_item(index, name):
-    st.session_state.reservas[index] = name
-    st.session_state.card_aberto = None
-    st.toast("Reserva feita no prototipo.")
-
-
 inject_style()
-
-if "reservas" not in st.session_state:
-    st.session_state.reservas = {1: "Exemplo"}
 
 if "card_aberto" not in st.session_state:
     st.session_state.card_aberto = None
 
-df = PRODUCTS.copy()
-df["Reservado"] = ["Sim" if i in st.session_state.reservas else "Nao" for i in df.index]
+try:
+    df = load_products()
+except Exception:
+    st.error("Não foi possível carregar a lista de presentes. Tente novamente em instantes.")
+    st.stop()
 
-available_count = int((df["Reservado"] != "Sim").sum())
-reserved_count = int((df["Reservado"] == "Sim").sum())
+if df.empty:
+    st.warning("Nenhum presente encontrado.")
+    st.stop()
+
+reserved_mask = df["Reservado"].astype(str).str.strip().str.lower() == "sim"
+available_count = int((~reserved_mask).sum())
+reserved_count = int(reserved_mask.sum())
 
 st.markdown(
     f"""
@@ -591,17 +549,16 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.markdown('<div class="filters">', unsafe_allow_html=True)
 filter_col, category_col = st.columns([3, 1])
 
 with filter_col:
     busca = st.text_input("Procurar presente", placeholder="Digite o nome do produto")
 
 with category_col:
-    categorias = ["Todas"] + sorted(df["Categoria"].unique().tolist())
+    categorias = ["Todas"] + sorted(
+        df["Categoria"].dropna().astype(str).unique().tolist()
+    )
     categoria = st.selectbox("Categoria", categorias)
-
-st.markdown("</div>", unsafe_allow_html=True)
 
 if len(busca) >= 2:
     df = df[df["produtos"].astype(str).str.contains(busca, case=False, na=False)]
@@ -628,21 +585,25 @@ st.markdown(
 cards = st.columns(3, gap="medium")
 
 for position, (idx, row) in enumerate(df.iterrows()):
-    reservado = row["Reservado"] == "Sim"
+    reservado = str(row["Reservado"]).strip().lower() == "sim"
+    product_name = html.escape(str(row.get("produtos", "Presente")))
+    category = html.escape(str(row.get("Categoria", "")))
+    price = html.escape(str(row.get("Preco", "")))
+    image_url = html.escape(str(row.get("Imagem", "")), quote=True)
 
     with cards[position % 3]:
         with st.container(border=True):
             st.markdown(
-                f"""
-                <div class="product-card">
-                <div class="product-image" style="background-image: url('{row["Imagem"]}');"></div>
-                <div class="card-body">
-                    <p class="product-name">{row["produtos"]}</p>
-                    <div class="meta-row">
-                        <span class="pill">{row["Categoria"]}</span>
-                    </div>
-                </div>
-                """,
+                f"""<div class="product-card">
+<div class="product-image" style="background-image: url('{image_url}');"></div>
+<div class="card-body">
+<p class="product-name">{product_name}</p>
+<div class="meta-row">
+<span class="pill">{category}</span>
+{f'<span class="pill price">R$ {price}</span>' if price else ''}
+</div>
+</div>
+</div>""",
                 unsafe_allow_html=True,
             )
 
@@ -650,6 +611,10 @@ for position, (idx, row) in enumerate(df.iterrows()):
                 st.markdown('<div class="status reserved"><span class="emoji">🔒️</span> Já escolhido</div>', unsafe_allow_html=True)
             else:
                 st.markdown('<div class="status available"><span class="emoji">✅</span> Disponível</div>', unsafe_allow_html=True)
+
+            product_link = str(row.get("Link", "")).strip()
+            if product_link:
+                st.link_button("Ver sugestão de compra", product_link, use_container_width=True)
 
             if st.session_state.card_aberto != idx:
                 if st.button(
@@ -677,11 +642,17 @@ for position, (idx, row) in enumerate(df.iterrows()):
                     if not nome.strip():
                         st.error("Informe seu nome.")
                     else:
-                        reserve_item(idx, nome.strip())
-                        st.rerun()
+                        try:
+                            reserve_product(int(row["_sheet_row"]), nome.strip())
+                        except ValueError as error:
+                            st.warning(str(error))
+                        except Exception:
+                            st.error("Não foi possível concluir a reserva. Tente novamente.")
+                        else:
+                            st.session_state.card_aberto = None
+                            st.toast("🎁 Presente reservado!")
+                            st.rerun()
 
                 if cancelar:
                     st.session_state.card_aberto = None
                     st.rerun()
-
-            st.markdown("</div>", unsafe_allow_html=True)
