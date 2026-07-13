@@ -58,6 +58,14 @@ def inject_style():
             font-family: "Poppins", sans-serif;
         }
 
+        div[data-baseweb="modal"] > div:first-child {
+            background-color: rgba(0, 0, 0, .58) !important;
+        }
+
+        div[data-baseweb="modal"] div[role="dialog"] {
+            background-color: var(--surface) !important;
+        }
+
         [data-testid="stHeader"] {
             display: none;
         }
@@ -407,7 +415,7 @@ def inject_style():
         .stApp div[data-testid="stTextInput"] input:-webkit-autofill:focus {
             -webkit-text-fill-color: var(--text) !important;
             caret-color: var(--purple) !important;
-            box-shadow: 0 0 0 1000px #fbefe2 inset !important;
+            box-shadow: 0 0 0 1000px var(--bg) inset !important;
         }
 
         div[data-baseweb="popover"],
