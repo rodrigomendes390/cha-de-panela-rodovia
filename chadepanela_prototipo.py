@@ -17,7 +17,8 @@ def image_to_base64(path):
         return base64.b64encode(image_file.read()).decode("utf-8")
 
 
-HERO_IMAGE = image_to_base64("assets/hero.png")
+HERO_DESKTOP_IMAGE = image_to_base64("assets/hero-desktop.webp")
+HERO_MOBILE_IMAGE = image_to_base64("assets/hero-mobile.webp")
 
 
 def inject_style():
@@ -26,8 +27,14 @@ def inject_style():
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
+        :root,
+        html,
+        body {
+            color-scheme: light;
+        }
+
         :root {
-            --bg: #f5e7d8;
+            --bg: #fbefe2;
             --surface: #fbefe3;
             --line: #d8bea5;
             --purple: #6c1dc6;
@@ -91,27 +98,10 @@ def inject_style():
             object-position: center 28% !important;
         }
 
-        .hero::before,
-        .hero::after {
-            content: "";
-            position: absolute;
-            width: 7rem;
-            height: 7rem;
-            border-radius: 999px;
-            opacity: .16;
-            pointer-events: none;
-        }
-
-        .hero::before {
-            left: -2rem;
-            top: -2rem;
-            background: var(--purple);
-        }
-
-        .hero::after {
-            right: -2rem;
-            bottom: -2rem;
-            background: var(--orange);
+        .hero picture {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
         .kicker {
@@ -212,6 +202,127 @@ def inject_style():
             font-size: 1rem;
         }
 
+        .reservation-reminder {
+            max-width: 1088px;
+            display: flex;
+            gap: .75rem;
+            align-items: flex-start;
+            margin: 0 auto 1.4rem;
+            padding: .9rem 1rem;
+            border: 1px solid rgba(108, 29, 198, .18);
+            border-radius: 16px;
+            background: rgba(251, 239, 227, .82);
+            color: var(--text);
+            font-size: .9rem;
+            line-height: 1.45;
+        }
+
+        .reservation-reminder strong {
+            color: var(--purple-deep);
+        }
+
+        .intro-lead {
+            margin: 0 0 .8rem;
+            color: var(--text);
+            font-size: .9rem;
+            line-height: 1.45;
+        }
+
+        .intro-steps {
+            display: flex;
+            flex-direction: column;
+            margin: 0 0 1rem;
+        }
+
+        .intro-step {
+            position: relative;
+            display: flex;
+            gap: .8rem;
+            align-items: flex-start;
+            padding: 0 0 .72rem;
+            color: var(--text);
+            font-size: .9rem;
+            line-height: 1.4;
+        }
+
+        .intro-step:last-child {
+            padding-bottom: 0;
+        }
+
+        .intro-step:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            z-index: 0;
+            left: .91rem;
+            top: 1.85rem;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(var(--purple-2), var(--orange));
+            opacity: .42;
+        }
+
+        .intro-number {
+            position: relative;
+            z-index: 1;
+            width: 1.9rem;
+            height: 1.9rem;
+            display: grid;
+            place-items: center;
+            flex: 0 0 auto;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--purple), var(--purple-2));
+            border: 3px solid var(--surface);
+            color: #fff;
+            font-size: .78rem;
+            font-weight: 800;
+            box-sizing: border-box;
+        }
+
+        .intro-step-copy {
+            padding-top: .08rem;
+        }
+
+        .intro-step-copy strong,
+        .intro-step-copy span {
+            display: block;
+        }
+
+        .intro-step-copy strong {
+            margin-bottom: .12rem;
+            color: var(--purple-deep);
+            font-size: .91rem;
+        }
+
+        .intro-step-copy span {
+            color: var(--muted);
+            font-size: .85rem;
+        }
+
+        .intro-details {
+            display: grid;
+            gap: .38rem;
+            margin: 0 0 .85rem;
+            padding: .7rem .78rem;
+            border-radius: 12px;
+            background: var(--orange-soft);
+            color: var(--text);
+            font-size: .8rem;
+            line-height: 1.38;
+        }
+
+        .confirmation-copy {
+            color: var(--text);
+            font-size: .98rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .confirmation-heart {
+            display: block;
+            margin-bottom: .35rem;
+            font-size: 2rem;
+        }
+
         .filters {
             max-width: 1120px;
             margin: .4rem 0 1.3rem;
@@ -219,8 +330,12 @@ def inject_style():
         }
 
         div[data-testid="stTextInput"] label,
-        div[data-testid="stSelectbox"] label {
-            color: var(--text);
+        div[data-testid="stTextInput"] label p,
+        div[data-testid="stTextInput"] [data-testid="stWidgetLabel"],
+        div[data-testid="stTextInput"] [data-testid="stWidgetLabel"] *,
+        div[data-testid="stSelectbox"] label,
+        div[data-testid="stSelectbox"] label p {
+            color: var(--text) !important;
             font-size: .86rem;
             font-weight: 750;
         }
@@ -229,7 +344,7 @@ def inject_style():
         div[data-baseweb="select"] > div {
             border-radius: 14px !important;
             border: 1.5px solid rgba(254, 129, 3, .42);
-            background: rgba(245, 231, 216, .82);
+            background: rgba(251, 239, 226, .82);
             box-shadow: none;
             outline: none !important;
         }
@@ -238,7 +353,7 @@ def inject_style():
         div[data-baseweb="input"] {
             border-radius: 14px !important;
             border: 1.5px solid rgba(254, 129, 3, .42) !important;
-            background: rgba(245, 231, 216, .82) !important;
+            background: rgba(251, 239, 226, .82) !important;
             box-shadow: none !important;
         }
 
@@ -255,20 +370,44 @@ def inject_style():
             box-shadow: 0 0 0 3px rgba(108, 29, 198, .10) !important;
         }
 
-        div[data-baseweb="input"] input,
+        .stApp div[data-testid="stTextInput"] input,
+        div[data-baseweb="input"] input {
+            color: var(--text) !important;
+            -webkit-text-fill-color: var(--text) !important;
+            caret-color: var(--purple) !important;
+            opacity: 1 !important;
+        }
+
         div[data-baseweb="select"] span,
         div[data-baseweb="select"] div {
             color: var(--orange) !important;
         }
 
+        div[data-testid="stTextInput"] input::placeholder,
         div[data-baseweb="input"] input::placeholder {
             color: rgba(254, 129, 3, .62) !important;
+            -webkit-text-fill-color: rgba(254, 129, 3, .62) !important;
             opacity: 1;
         }
 
-        div[data-baseweb="input"] > div:focus-within input,
+        div[data-testid="stTextInput"] input:focus,
+        div[data-baseweb="input"] > div:focus-within input {
+            color: var(--purple) !important;
+            -webkit-text-fill-color: var(--purple) !important;
+        }
+
+        div[data-testid="stTextInput"] input:focus::placeholder,
         div[data-baseweb="input"] > div:focus-within input::placeholder {
             color: var(--purple) !important;
+            -webkit-text-fill-color: var(--purple) !important;
+        }
+
+        .stApp div[data-testid="stTextInput"] input:-webkit-autofill,
+        .stApp div[data-testid="stTextInput"] input:-webkit-autofill:hover,
+        .stApp div[data-testid="stTextInput"] input:-webkit-autofill:focus {
+            -webkit-text-fill-color: var(--text) !important;
+            caret-color: var(--purple) !important;
+            box-shadow: 0 0 0 1000px #fbefe2 inset !important;
         }
 
         div[data-baseweb="popover"],
@@ -390,8 +529,8 @@ def inject_style():
             aspect-ratio: 1 / 1;
             display: block;
             background: #f4eadf;
-            background-size: cover;
-            background-position: center;
+            object-fit: cover;
+            object-position: center;
             border-radius: 14px;
             margin: 0;
         }
@@ -498,12 +637,15 @@ def inject_style():
             }
 
             .hero {
-                min-height: 58vh;
+                min-height: 0;
+                height: min(83.333vw, 390px);
             }
 
             .hero-img {
-                height: 58vh;
-                min-height: 420px;
+                height: min(83.333vw, 390px);
+                min-height: 0;
+                aspect-ratio: 6 / 5;
+                object-position: center !important;
             }
 
             .product-name {
@@ -511,12 +653,99 @@ def inject_style():
             }
         }
         </style>
-        """.replace("__HERO_IMAGE__", HERO_IMAGE),
+        """,
         unsafe_allow_html=True,
     )
 
 
 inject_style()
+
+if "dinamica_confirmada" not in st.session_state:
+    st.session_state.dinamica_confirmada = False
+
+if "reserva_confirmada" not in st.session_state:
+    st.session_state.reserva_confirmada = None
+
+
+@st.dialog("Oiie! Que bom ter você aqui 💜🧡", dismissible=False)
+def explicar_dinamica():
+    st.markdown(
+        """
+        <p class="intro-lead">
+            Obrigada por fazer parte desse momento com a gente! Preparamos um
+            resuminho para contar como tudo funciona ✨
+        </p>
+        <div class="intro-steps">
+            <div class="intro-step">
+                <span class="intro-number">1</span>
+                <span class="intro-step-copy">
+                    <strong>Escolha com carinho</strong>
+                    <span>Reserve um presente disponível com o seu nome.</span>
+                </span>
+            </div>
+            <div class="intro-step">
+                <span class="intro-number">2</span>
+                <span class="intro-step-copy">
+                    <strong>Compre onde preferir</strong>
+                    <span>A loja, a marca e o modelo ficam por sua conta.</span>
+                </span>
+            </div>
+            <div class="intro-step">
+                <span class="intro-number">3</span>
+                <span class="intro-step-copy">
+                    <strong>Leve no nosso grande dia</strong>
+                    <span>Traga o presente embrulhado no dia 29/08.</span>
+                </span>
+            </div>
+        </div>
+        <div class="intro-details">
+            <span>🖼️ Imagens ilustrativas; por isso não mostramos preços.</span>
+            <span>🎨 Não temos regras de cor: escolha tons básicos, como branco,
+            preto, madeira e metalizado, ou as cores do casamento — roxo, laranja,
+            rosa e amarelo.</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    if st.button(
+        "Entendi 💜",
+        key="confirmar_dinamica",
+        use_container_width=True,
+    ):
+        st.session_state.dinamica_confirmada = True
+        st.rerun()
+
+
+@st.dialog("Presente reservado!", dismissible=False)
+def agradecer_reserva(product_name):
+    safe_product_name = html.escape(product_name)
+    st.markdown(
+        f"""
+        <p class="confirmation-copy">
+            <span class="confirmation-heart">💜</span>
+            Obrigada por reservar <strong>{safe_product_name}</strong>!<br><br>
+            Estamos contando com você e com esse presente no dia
+            <strong>29/08</strong>, no nosso chá de panela.<br><br>
+            Mal podemos esperar para celebrar esse momento juntinhos! ✨
+        </p>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    if st.button(
+        "Combinado!",
+        key="fechar_confirmacao_reserva",
+        use_container_width=True,
+    ):
+        st.session_state.reserva_confirmada = None
+        st.rerun()
+
+
+if not st.session_state.dinamica_confirmada:
+    explicar_dinamica()
+elif st.session_state.reserva_confirmada:
+    agradecer_reserva(st.session_state.reserva_confirmada)
 
 if "card_aberto" not in st.session_state:
     st.session_state.card_aberto = None
@@ -538,33 +767,36 @@ reserved_count = int(reserved_mask.sum())
 st.markdown(
     f"""
     <section class="hero">
-        <img class="hero-img" src="data:image/png;base64,{HERO_IMAGE}" alt="">
+        <picture>
+            <source media="(max-width: 760px)" srcset="data:image/webp;base64,{HERO_MOBILE_IMAGE}">
+            <img class="hero-img" src="data:image/webp;base64,{HERO_DESKTOP_IMAGE}"
+                 alt="Chá de panela — dia 29 de agosto de 2026" fetchpriority="high">
+        </picture>
     </section>
     <div class="stats">
             <span class="stat"><span class="emoji">🎁</span><strong>{len(df)}</strong> presentes</span>
             <span class="stat"><span class="emoji">✅</span><strong>{available_count}</strong> disponíveis</span>
             <span class="stat"><span class="emoji">🔒️</span><strong>{reserved_count}</strong> reservados</span>
+    </div>
+    <div class="reservation-reminder">
+        <span>💜</span>
+        <div>
+            <strong>Escolheu um presente?</strong>
+            Reserve por aqui, compre onde preferir e leve-o embrulhadinho no dia 29/08.
+            As imagens são apenas para inspirar a sua escolha.
         </div>
+    </div>
     """,
     unsafe_allow_html=True,
 )
 
-filter_col, category_col = st.columns([3, 1])
+filter_col = st.columns(1)[0]
 
 with filter_col:
     busca = st.text_input("Procurar presente", placeholder="Digite o nome do produto")
 
-with category_col:
-    categorias = ["Todas"] + sorted(
-        df["Categoria"].dropna().astype(str).unique().tolist()
-    )
-    categoria = st.selectbox("Categoria", categorias)
-
 if len(busca) >= 2:
     df = df[df["produtos"].astype(str).str.contains(busca, case=False, na=False)]
-
-if categoria != "Todas":
-    df = df[df["Categoria"] == categoria]
 
 st.markdown(
     """
@@ -587,21 +819,25 @@ cards = st.columns(3, gap="medium")
 for position, (idx, row) in enumerate(df.iterrows()):
     reservado = str(row["Reservado"]).strip().lower() == "sim"
     product_name = html.escape(str(row.get("produtos", "Presente")))
-    category = html.escape(str(row.get("Categoria", "")))
     price = html.escape(str(row.get("Preco", "")))
     image_url = html.escape(str(row.get("Imagem", "")), quote=True)
+    image_markup = (
+        f'<img class="product-image" src="{image_url}" alt="{product_name}" '
+        'loading="lazy" decoding="async">'
+        if image_url
+        else '<div class="product-image" aria-hidden="true"></div>'
+    )
 
     with cards[position % 3]:
         with st.container(border=True):
             st.markdown(
                 f"""<div class="product-card">
-<div class="product-image" style="background-image: url('{image_url}');"></div>
+{image_markup}
 <div class="card-body">
 <p class="product-name">{product_name}</p>
-<div class="meta-row">
-<span class="pill">{category}</span>
-{f'<span class="pill price">R$ {price}</span>' if price else ''}
-</div>
+{f'''<div class="meta-row">
+<span class="pill price">R$ {price}</span>
+</div>''' if price else ''}
 </div>
 </div>""",
                 unsafe_allow_html=True,
@@ -611,10 +847,6 @@ for position, (idx, row) in enumerate(df.iterrows()):
                 st.markdown('<div class="status reserved"><span class="emoji">🔒️</span> Já escolhido</div>', unsafe_allow_html=True)
             else:
                 st.markdown('<div class="status available"><span class="emoji">✅</span> Disponível</div>', unsafe_allow_html=True)
-
-            product_link = str(row.get("Link", "")).strip()
-            if product_link:
-                st.link_button("Ver sugestão de compra", product_link, use_container_width=True)
 
             if st.session_state.card_aberto != idx:
                 if st.button(
@@ -650,7 +882,9 @@ for position, (idx, row) in enumerate(df.iterrows()):
                             st.error("Não foi possível concluir a reserva. Tente novamente.")
                         else:
                             st.session_state.card_aberto = None
-                            st.toast("🎁 Presente reservado!")
+                            st.session_state.reserva_confirmada = str(
+                                row.get("produtos", "seu presente")
+                            )
                             st.rerun()
 
                 if cancelar:

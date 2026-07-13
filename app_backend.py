@@ -1,10 +1,13 @@
+import os
+
 import pandas as pd
 import streamlit as st
 import gspread
 from google.oauth2.service_account import Credentials
 
 
-LOCAL = False
+LOCAL = os.getenv("CHA_LOCAL", "").strip().lower() in {"1", "true", "yes"}
+PREVIEW = os.getenv("CHA_PREVIEW", "").strip().lower() in {"1", "true", "yes"}
 SHEET_ID = "1KBLAZ-NQRY4avsighgYBqBvAhebAsmWeDy3ccTib_hw"
 WORKSHEET_NAME = "Cozinha"
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
@@ -29,22 +32,24 @@ def get_worksheet():
     return client.open_by_key(SHEET_ID).worksheet(WORKSHEET_NAME)
 
 
-@st.cache_data(ttl=60)
+@st.cache_data(ttl=300)
 def load_products():
     records = get_worksheet().get_all_records()
     products = pd.DataFrame(records)
     products = products.rename(columns={"link": "Link"})
 
-    for column in ("Categoria", "Preco", "Imagem", "Link", "Reservado"):
+    for column in ("Preco", "Imagem", "Link", "Reservado"):
         if column not in products.columns:
             products[column] = ""
 
-    products["Categoria"] = products["Categoria"].replace("", "Presentes")
     products["_sheet_row"] = range(2, len(products) + 2)
     return products
 
 
 def reserve_product(sheet_row, name):
+    if PREVIEW:
+        return
+
     worksheet = get_worksheet()
     status = worksheet.acell(f"C{sheet_row}").value
 
