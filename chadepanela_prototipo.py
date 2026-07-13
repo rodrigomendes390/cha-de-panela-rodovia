@@ -19,6 +19,7 @@ def image_to_base64(path):
 
 HERO_DESKTOP_IMAGE = image_to_base64("assets/hero-desktop.webp")
 HERO_MOBILE_IMAGE = image_to_base64("assets/hero-mobile.webp")
+MAPS_URL = "https://www.google.com/maps/search/?api=1&query=Rua+Silva+Rabelo%2C+91"
 
 
 def inject_style():
@@ -26,6 +27,23 @@ def inject_style():
         """
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0');
+
+        .material-symbols-outlined {
+            font-family: "Material Symbols Outlined";
+            font-weight: normal;
+            font-style: normal;
+            font-size: 1.25rem;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: "liga";
+            -webkit-font-smoothing: antialiased;
+        }
 
         :root,
         html,
@@ -38,18 +56,18 @@ def inject_style():
             --surface: #fbefe3;
             --line: #d8bea5;
             --purple: #6c1dc6;
-            --purple-2: #9b05db;
+            --purple-2: #6c1dc6;
             --purple-deep: #6c1dc6;
             --purple-soft: #f0e7ff;
             --orange: #fe8103;
             --orange-soft: #fff0dc;
             --pink: #ff1d6b;
             --pink-2: #e200a2;
-            --lilac: #9b05db;
+            --lilac: #6c1dc6;
             --yellow: #fbdd49;
-            --green: #6f8b53;
-            --text: #4b2774;
-            --muted: #837081;
+            --green: #595e28;
+            --text: #595e28;
+            --muted: #7b7768;
         }
 
         .stApp {
@@ -210,23 +228,219 @@ def inject_style():
             font-size: 1rem;
         }
 
-        .reservation-reminder {
+        .event-invite {
+            width: calc(100% - 2rem);
             max-width: 1088px;
-            display: flex;
-            gap: .75rem;
-            align-items: flex-start;
-            margin: 0 auto 1.4rem;
-            padding: .9rem 1rem;
-            border: 1px solid rgba(108, 29, 198, .18);
-            border-radius: 16px;
-            background: rgba(251, 239, 227, .82);
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr);
+            gap: clamp(2rem, 6vw, 5rem);
+            align-items: center;
+            box-sizing: border-box;
+            margin: .5rem auto 1.3rem;
+            padding: 1.25rem 0 1rem;
             color: var(--text);
-            font-size: .9rem;
-            line-height: 1.45;
         }
 
-        .reservation-reminder strong {
+        .event-eyebrow {
+            display: block;
+            margin-bottom: .55rem;
+            color: var(--muted);
+            font-size: .78rem;
+            font-weight: 800;
+            letter-spacing: .04em;
+        }
+
+        .event-invite-title {
+            margin: 0;
+            max-width: 680px;
+            color: var(--text);
+            font-size: clamp(1.9rem, 3.6vw, 3rem);
+            line-height: 1.08;
+            font-weight: 800;
+            letter-spacing: -.025em;
+        }
+
+        .event-invite-copy p {
+            max-width: 600px;
+            margin: .8rem 0 0;
+            color: var(--muted);
+            font-size: .98rem;
+            line-height: 1.55;
+        }
+
+        .event-highlight {
+            position: relative;
+            min-height: 190px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .event-date-lockup {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: .65rem;
+            align-items: center;
+        }
+
+        .event-day {
             color: var(--purple-deep);
+            font-size: clamp(4.5rem, 8vw, 6.5rem);
+            line-height: .82;
+            font-weight: 800;
+            letter-spacing: -.07em;
+        }
+
+        .event-date-meta {
+            color: var(--orange);
+            font-size: 1.12rem;
+            line-height: 1.15;
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+
+        .event-date-meta strong {
+            display: block;
+            margin-top: .35rem;
+            color: var(--purple-deep);
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+
+        .event-location-lockup {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: .55rem;
+            align-items: flex-start;
+            margin-top: 1rem;
+        }
+
+        .event-location-lockup > .material-symbols-outlined {
+            margin-top: .08rem;
+            color: var(--orange);
+            font-size: 1.25rem;
+        }
+
+        .event-location-lockup strong,
+        .event-location-lockup span {
+            display: block;
+        }
+
+        .event-location-lockup strong {
+            color: var(--text);
+            font-size: .92rem;
+        }
+
+        .event-location-lockup span {
+            color: var(--muted);
+            font-size: .84rem;
+        }
+
+        .event-address-link {
+            color: inherit !important;
+            font-weight: inherit;
+            text-decoration-line: underline;
+            text-decoration-color: rgba(254, 129, 3, .55);
+            text-decoration-thickness: 1px;
+            text-underline-offset: 3px;
+        }
+
+        .event-address-link:hover {
+            color: var(--purple) !important;
+            text-decoration-color: var(--purple);
+        }
+
+        .event-map-link {
+            display: inline-block;
+            margin-top: .28rem;
+            color: var(--orange) !important;
+            font-size: .78rem;
+            font-weight: 750;
+            text-decoration: none;
+        }
+
+        .event-map-link:hover {
+            color: var(--purple) !important;
+        }
+
+        .event-steps {
+            width: calc(100% - 2rem);
+            max-width: 1088px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: clamp(1rem, 3vw, 2.5rem);
+            box-sizing: border-box;
+            margin: 0 auto 1rem;
+        }
+
+        .event-step {
+            position: relative;
+            display: block;
+        }
+
+        .event-step:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            z-index: 0;
+            top: 1.02rem;
+            left: 2.15rem;
+            right: -3rem;
+            height: 2px;
+            background: linear-gradient(90deg, var(--purple), var(--orange));
+            opacity: .30;
+        }
+
+        .event-step-number {
+            position: relative;
+            z-index: 1;
+            grid-row: 1 / span 2;
+            width: 2.15rem;
+            height: 2.15rem;
+            display: grid;
+            place-items: center;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--purple), var(--purple-2));
+            color: #fff;
+            font-size: .78rem;
+            line-height: 1;
+            font-weight: 800;
+            margin-bottom: .55rem;
+        }
+
+        .event-step strong {
+            display: block;
+            color: var(--text);
+            font-size: .88rem;
+            font-weight: 800;
+        }
+
+        .event-step span:last-child {
+            display: block;
+            margin-top: .12rem;
+            color: var(--muted);
+            font-size: .78rem;
+            line-height: 1.4;
+        }
+
+        .event-contact-inline {
+            display: flex !important;
+            gap: .35rem;
+            align-items: center;
+            margin-top: 1rem !important;
+            color: var(--text) !important;
+            font-size: .84rem !important;
+        }
+
+        .event-contact-inline .material-symbols-outlined {
+            color: var(--purple);
+            font-size: 1.05rem;
+        }
+
+        .event-contact-inline strong {
+            color: var(--text);
         }
 
         .intro-lead {
@@ -331,10 +545,60 @@ def inject_style():
             font-size: 2rem;
         }
 
+        .event-footer {
+            width: calc(100% - 2rem);
+            max-width: 1088px;
+            box-sizing: border-box;
+            margin: 2.2rem auto 0;
+            padding: 1.25rem 1rem;
+            border: 1px solid rgba(108, 29, 198, .18);
+            border-radius: 20px;
+            background: rgba(251, 239, 227, .88);
+            color: var(--text);
+            text-align: center;
+        }
+
+        .event-footer strong {
+            display: block;
+            margin-bottom: .65rem;
+            color: var(--purple-deep);
+            font-size: 1rem;
+        }
+
+        .event-footer-details {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: .45rem 1.2rem;
+            font-size: .9rem;
+            line-height: 1.45;
+        }
+
         .filters {
             max-width: 1120px;
             margin: .4rem 0 1.3rem;
             padding: 0 1rem;
+        }
+
+        .product-start {
+            width: calc(100% - 2rem);
+            max-width: 1120px;
+            box-sizing: border-box;
+            margin: 4.2rem auto .9rem;
+        }
+
+        .product-start-title {
+            margin: 0;
+            color: var(--text);
+            font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+            line-height: 1.2;
+            font-weight: 800;
+        }
+
+        .product-start p {
+            margin: .35rem 0 0;
+            color: var(--muted);
+            font-size: .88rem;
         }
 
         div[data-testid="stTextInput"] label,
@@ -466,25 +730,6 @@ def inject_style():
             color: var(--purple) !important;
         }
 
-        .section-heading {
-            max-width: 1120px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            margin: 1.1rem auto .9rem;
-            padding: 0 1rem;
-        }
-
-        .section-heading h2 {
-            margin: 0;
-            color: var(--text);
-            font-size: 1rem;
-            font-weight: 800;
-            letter-spacing: .02em;
-            text-transform: uppercase;
-        }
-
         [data-testid="stHorizontalBlock"] {
             max-width: 1120px;
             margin-left: auto;
@@ -492,25 +737,6 @@ def inject_style():
             padding-left: 1rem;
             padding-right: 1rem;
         }
-
-        .tiny-flower {
-            display: flex;
-            gap: .35rem;
-            align-items: center;
-        }
-
-        .dot {
-            width: .48rem;
-            height: .48rem;
-            border-radius: 999px;
-            display: block;
-        }
-
-        .dot.purple { background: var(--purple); }
-        .dot.orange { background: var(--orange); }
-        .dot.pink { background: var(--pink); }
-        .dot.lilac { background: var(--lilac); }
-        .dot.yellow { background: var(--yellow); }
 
         .card-body {
             padding: 1rem 0 0;
@@ -637,6 +863,13 @@ def inject_style():
             transform: none;
         }
 
+        @media (max-width: 1000px) {
+            .event-invite {
+                grid-template-columns: minmax(0, 1fr) minmax(280px, .8fr);
+                gap: 2rem;
+            }
+        }
+
         @media (max-width: 760px) {
             .block-container {
                 padding-left: 0;
@@ -659,6 +892,65 @@ def inject_style():
             .product-name {
                 min-height: auto;
             }
+
+            .event-invite,
+            .event-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .event-invite {
+                gap: 1.25rem;
+                padding-top: .75rem;
+                text-align: center;
+            }
+
+            .event-invite-copy p {
+                margin-right: auto;
+                margin-left: auto;
+            }
+
+            .event-contact-inline {
+                justify-content: center;
+            }
+
+            .event-highlight {
+                min-height: 190px;
+                align-items: center;
+            }
+
+            .event-location-lockup {
+                text-align: left;
+            }
+
+            .event-steps {
+                gap: 1rem;
+            }
+
+            .product-start {
+                margin-top: 3rem;
+            }
+
+            .event-step {
+                display: grid;
+                grid-template-columns: 2.15rem 1fr;
+                column-gap: .65rem;
+                align-items: start;
+            }
+
+            .event-step-number {
+                margin-bottom: 0;
+            }
+
+            .event-step:not(:last-child)::after {
+                top: 2.15rem;
+                right: auto;
+                bottom: -1rem;
+                left: 1.02rem;
+                width: 2px;
+                height: auto;
+                background: linear-gradient(180deg, var(--purple), var(--orange));
+            }
+
         }
         </style>
         """,
@@ -678,7 +970,7 @@ if "reserva_confirmada" not in st.session_state:
 @st.dialog("Oiie! Que bom ter você aqui 💜🧡", dismissible=False)
 def explicar_dinamica():
     st.markdown(
-        """
+        f"""
         <p class="intro-lead">
             Obrigada por fazer parte desse momento com a gente! Preparamos um
             resuminho para contar como tudo funciona ✨
@@ -702,7 +994,11 @@ def explicar_dinamica():
                 <span class="intro-number">3</span>
                 <span class="intro-step-copy">
                     <strong>Leve no nosso grande dia</strong>
-                    <span>Traga o presente embrulhado no dia 29/08.</span>
+                    <span>
+                        Traga o presente embrulhado no dia 29/08, às 15h, na
+                        <a class="event-address-link" href="{MAPS_URL}" target="_blank"
+                           rel="noopener noreferrer">Rua Silva Rabelo, 91 — Salão de Festas</a>.
+                    </span>
                 </span>
             </div>
         </div>
@@ -781,18 +1077,61 @@ st.markdown(
                  alt="Chá de panela — dia 29 de agosto de 2026" fetchpriority="high">
         </picture>
     </section>
-    <div class="stats">
-            <span class="stat"><span class="emoji">🎁</span><strong>{len(df)}</strong> presentes</span>
-            <span class="stat"><span class="emoji">✅</span><strong>{available_count}</strong> disponíveis</span>
-            <span class="stat"><span class="emoji">🔒️</span><strong>{reserved_count}</strong> reservados</span>
-    </div>
-    <div class="reservation-reminder">
-        <span>💜</span>
-        <div>
-            <strong>Escolheu um presente?</strong>
-            Reserve por aqui, compre onde preferir e leve-o embrulhadinho no dia 29/08.
-            As imagens são apenas para inspirar a sua escolha.
+    <section class="event-invite">
+        <div class="event-invite-copy">
+            <span class="event-eyebrow">Chá de panela Lívia e Rodrigo 💜🧡</span>
+            <div class="event-invite-title">Obrigada por fazer parte desse momento tão especial!</div>
+            <p>
+                Preparamos tudo com muito carinho e estamos contando os dias
+                para celebrar com você.
+            </p>
+            <p class="event-contact-inline">
+                <span class="material-symbols-outlined" aria-hidden="true">chat_bubble</span>
+                <span><strong>Ainda ficou com dúvidas?</strong> Fale com um dos noivos!</span>
+            </p>
         </div>
+        <div class="event-highlight">
+            <div class="event-date-lockup">
+                <span class="event-day">29</span>
+                <span class="event-date-meta">de agosto<strong>às 15h</strong></span>
+            </div>
+            <div class="event-location-lockup">
+                <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+                <div>
+                    <strong>Rua Silva Rabelo, 91</strong>
+                    <span>Salão de Festas</span>
+                    <a class="event-map-link" href="{MAPS_URL}" target="_blank"
+                       rel="noopener noreferrer">Ver no Google Maps ↗</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="event-steps">
+        <div class="event-step">
+            <span class="event-step-number">1</span>
+            <strong>Escolha e reserve</strong>
+            <span>Selecione um presente disponível e deixe o seu nome.</span>
+        </div>
+        <div class="event-step">
+            <span class="event-step-number">2</span>
+            <strong>Compre onde preferir</strong>
+            <span>A loja, a marca e o modelo ficam por sua conta.</span>
+        </div>
+        <div class="event-step">
+            <span class="event-step-number">3</span>
+            <strong>Leve no grande dia</strong>
+            <span>Traga o presente embrulhado no dia 29/08.</span>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
+    <div class="product-start">
+        <div class="product-start-title">Escolha seu presente:</div>
+        <p>Pesquise pelo nome ou navegue pela lista abaixo.</p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -801,26 +1140,25 @@ st.markdown(
 filter_col = st.columns(1)[0]
 
 with filter_col:
-    busca = st.text_input("Procurar presente", placeholder="Digite o nome do produto")
-
-if len(busca) >= 2:
-    df = df[df["produtos"].astype(str).str.contains(busca, case=False, na=False)]
+    busca = st.text_input(
+        "Procurar presente",
+        placeholder="Digite o nome do produto",
+        label_visibility="collapsed",
+    )
 
 st.markdown(
-    """
-    <div class="section-heading">
-        <h2>Escolha seu presente</h2>
-        <div class="tiny-flower">
-            <span class="dot purple"></span>
-            <span class="dot orange"></span>
-            <span class="dot pink"></span>
-            <span class="dot lilac"></span>
-            <span class="dot yellow"></span>
-        </div>
+    f"""
+    <div class="stats">
+        <span class="stat"><span class="emoji">🎁</span><strong>{len(df)}</strong> presentes</span>
+        <span class="stat"><span class="emoji">✅</span><strong>{available_count}</strong> disponíveis</span>
+        <span class="stat"><span class="emoji">🔒️</span><strong>{reserved_count}</strong> reservados</span>
     </div>
     """,
     unsafe_allow_html=True,
 )
+
+if len(busca) >= 2:
+    df = df[df["produtos"].astype(str).str.contains(busca, case=False, na=False)]
 
 cards = st.columns(3, gap="medium")
 
@@ -898,3 +1236,17 @@ for position, (idx, row) in enumerate(df.iterrows()):
                 if cancelar:
                     st.session_state.card_aberto = None
                     st.rerun()
+
+st.markdown(
+    """
+    <footer class="event-footer">
+        <strong>Nos vemos no dia 29/08! 💜🧡</strong>
+        <div class="event-footer-details">
+            <span>📍 <a class="event-address-link" href="{MAPS_URL}" target="_blank"
+               rel="noopener noreferrer">Rua Silva Rabelo, 91 — Salão de Festas</a></span>
+            <span>🕓 15h</span>
+        </div>
+    </footer>
+    """,
+    unsafe_allow_html=True,
+)
