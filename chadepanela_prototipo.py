@@ -995,7 +995,7 @@ def explicar_dinamica():
                 <span class="intro-step-copy">
                     <strong>Leve no nosso grande dia</strong>
                     <span>
-                        Traga o presente embrulhado no dia 29/08, às 15h, na
+                        Traga o presente embrulhado no dia 29/08, às 16h, na
                         <a class="event-address-link" href="{MAPS_URL}" target="_blank"
                            rel="noopener noreferrer">Rua Silva Rabelo, 91 — Salão de Festas</a>.
                     </span>
@@ -1093,7 +1093,7 @@ st.markdown(
         <div class="event-highlight">
             <div class="event-date-lockup">
                 <span class="event-day">29</span>
-                <span class="event-date-meta">de agosto<strong>às 15h</strong></span>
+                <span class="event-date-meta">de agosto<strong>às 16h</strong></span>
             </div>
             <div class="event-location-lockup">
                 <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
@@ -1244,7 +1244,7 @@ st.markdown(
         <div class="event-footer-details">
             <span>📍 <a class="event-address-link" href="{MAPS_URL}" target="_blank"
                rel="noopener noreferrer">Rua Silva Rabelo, 91 — Salão de Festas</a></span>
-            <span>🕓 15h</span>
+            <span>🕓 16h</span>
         </div>
     </footer>
     """,
