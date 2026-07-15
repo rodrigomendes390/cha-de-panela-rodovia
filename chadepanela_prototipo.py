@@ -81,13 +81,16 @@ def inject_style():
             background-color: transparent !important;
         }
 
-        div[data-baseweb="modal"] > div:first-child,
-        div[data-testid="stDialog"] > div:first-child {
-            background: rgba(0, 0, 0, .72) !important;
+        div[data-baseweb="modal"] > div:not([role="dialog"]),
+        div[data-testid="stDialog"] > div:not([role="dialog"]) {
+            background-color: transparent !important;
         }
 
         div[data-baseweb="modal"] div[role="dialog"] {
             background-color: var(--surface) !important;
+            box-shadow:
+                0 18px 50px rgba(0, 0, 0, .28),
+                0 0 0 100vmax rgba(0, 0, 0, .72) !important;
         }
 
         [data-testid="stHeader"] {
