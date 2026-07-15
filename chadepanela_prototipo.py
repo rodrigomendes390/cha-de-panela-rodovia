@@ -79,6 +79,7 @@ def inject_style():
         div[data-baseweb="modal"],
         div[data-testid="stDialog"] {
             background-color: transparent !important;
+            z-index: 1000060 !important;
         }
 
         div[data-baseweb="modal"] > div:not([role="dialog"]),
@@ -86,11 +87,19 @@ def inject_style():
             background-color: transparent !important;
         }
 
-        div[data-baseweb="modal"] div[role="dialog"] {
+        body:has(div[role="dialog"])::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 1000050;
+            background: rgba(0, 0, 0, .72);
+            pointer-events: none;
+        }
+
+        div[role="dialog"] {
             background-color: var(--surface) !important;
-            box-shadow:
-                0 18px 50px rgba(0, 0, 0, .28),
-                0 0 0 100vmax rgba(0, 0, 0, .72) !important;
+            opacity: 1 !important;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, .32) !important;
         }
 
         [data-testid="stHeader"] {
