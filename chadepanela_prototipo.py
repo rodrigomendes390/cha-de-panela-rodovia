@@ -87,7 +87,7 @@ def inject_style():
             background-color: transparent !important;
         }
 
-        body:has(div[role="dialog"])::before {
+        body:has([role="dialog"])::before {
             content: "";
             position: fixed;
             inset: 0;
@@ -96,7 +96,7 @@ def inject_style():
             pointer-events: none;
         }
 
-        div[role="dialog"] {
+        [role="dialog"] {
             background-color: var(--surface) !important;
             opacity: 1 !important;
             box-shadow: 0 18px 50px rgba(0, 0, 0, .32) !important;
