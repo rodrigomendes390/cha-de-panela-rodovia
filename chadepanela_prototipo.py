@@ -76,8 +76,14 @@ def inject_style():
             font-family: "Poppins", sans-serif;
         }
 
-        div[data-baseweb="modal"] > div:first-child {
-            background-color: rgba(0, 0, 0, .58) !important;
+        div[data-baseweb="modal"],
+        div[data-testid="stDialog"] {
+            background-color: transparent !important;
+        }
+
+        div[data-baseweb="modal"] > div:first-child,
+        div[data-testid="stDialog"] > div:first-child {
+            background: rgba(0, 0, 0, .72) !important;
         }
 
         div[data-baseweb="modal"] div[role="dialog"] {
