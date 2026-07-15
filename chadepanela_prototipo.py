@@ -563,6 +563,22 @@ def inject_style():
             font-size: 2rem;
         }
 
+        .confirmation-details {
+            display: grid;
+            gap: .55rem;
+            margin: .9rem 0;
+            padding: .8rem .9rem;
+            border-radius: 12px;
+            background: var(--orange-soft);
+            color: var(--text);
+            font-size: .82rem;
+            line-height: 1.45;
+        }
+
+        .confirmation-details span {
+            display: block;
+        }
+
         .event-footer {
             width: calc(100% - 2rem);
             max-width: 1088px;
@@ -1047,8 +1063,16 @@ def agradecer_reserva(product_name):
         <p class="confirmation-copy">
             <span class="confirmation-heart">💜</span>
             Obrigada por reservar <strong>{safe_product_name}</strong>!<br><br>
-            Estamos contando com você e com esse presente no dia
-            <strong>29/08</strong>, no nosso chá de panela.<br><br>
+            Estamos contando com você e com esse presente no nosso chá de panela.
+        </p>
+        <div class="confirmation-details">
+            <span>🕓 <strong>29/08, às 16h</strong></span>
+            <span>📍 <a class="event-address-link" href="{MAPS_URL}" target="_blank"
+                rel="noopener noreferrer">Rua Silva Rabelo, 91 — Salão de Festas</a></span>
+            <span>🎨 Escolha tons básicos, como branco, preto, madeira e metalizado,
+                ou as cores do casamento — roxo, laranja, rosa e amarelo.</span>
+        </div>
+        <p class="confirmation-copy">
             Mal podemos esperar para celebrar esse momento juntinhos! ✨
         </p>
         """,
