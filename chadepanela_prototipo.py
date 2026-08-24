@@ -1169,6 +1169,43 @@ reserved_mask = df["Reservado"].astype(str).str.strip().str.lower() == "sim"
 available_count = int((~reserved_mask).sum())
 reserved_count = int(reserved_mask.sum())
 
+
+def render_reservation_lookup(key_suffix):
+    with st.expander("🔎 Já escolheu? Consulte sua reserva"):
+        st.caption(
+            "Digite o mesmo nome usado na reserva para lembrar qual presente escolheu."
+        )
+        with st.form(f"consultar_reserva_{key_suffix}"):
+            nome_consulta = st.text_input(
+                "Seu nome",
+                placeholder="Digite seu nome",
+                key=f"nome_consulta_{key_suffix}",
+            )
+            consultar = st.form_submit_button(
+                "Ver minha reserva",
+                use_container_width=True,
+            )
+
+        if consultar:
+            nome_normalizado = normalize_name(nome_consulta)
+            if len(nome_normalizado) < 2:
+                st.error("Informe o nome usado na reserva.")
+            else:
+                nomes_reservados = df["Nome"].map(normalize_name)
+                minhas_reservas = df[
+                    (nomes_reservados == nome_normalizado) & reserved_mask
+                ]
+
+                if minhas_reservas.empty:
+                    st.warning("Não encontramos uma reserva com esse nome.")
+                else:
+                    presentes = minhas_reservas["produtos"].astype(str).tolist()
+                    if len(presentes) == 1:
+                        st.success(f"Você reservou: {presentes[0]}")
+                    else:
+                        st.success("Você reservou: " + ", ".join(presentes))
+
+
 st.markdown(
     f"""
     <section class="hero">
@@ -1178,6 +1215,14 @@ st.markdown(
                  alt="Chá de panela — dia 29 de agosto de 2026" fetchpriority="high">
         </picture>
     </section>
+    """,
+    unsafe_allow_html=True,
+)
+
+render_reservation_lookup("inicio")
+
+st.markdown(
+    f"""
     <section class="event-invite">
         <div class="event-invite-copy">
             <span class="event-eyebrow">Chá de panela Lívia e Rodrigo 💜🧡</span>
@@ -1228,37 +1273,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-with st.expander("🔎 Já escolheu? Consulte sua reserva"):
-    st.caption("Digite o mesmo nome usado na reserva para lembrar qual presente escolheu.")
-    with st.form("consultar_reserva"):
-        nome_consulta = st.text_input(
-            "Seu nome",
-            placeholder="Digite seu nome",
-            key="nome_consulta",
-        )
-        consultar = st.form_submit_button(
-            "Ver minha reserva",
-            use_container_width=True,
-        )
-
-    if consultar:
-        nome_normalizado = normalize_name(nome_consulta)
-        if len(nome_normalizado) < 2:
-            st.error("Informe o nome usado na reserva.")
-        else:
-            nomes_reservados = df["Nome"].map(normalize_name)
-            minhas_reservas = df[
-                (nomes_reservados == nome_normalizado) & reserved_mask
-            ]
-
-            if minhas_reservas.empty:
-                st.warning("Não encontramos uma reserva com esse nome.")
-            else:
-                presentes = minhas_reservas["produtos"].astype(str).tolist()
-                if len(presentes) == 1:
-                    st.success(f"Você reservou: {presentes[0]}")
-                else:
-                    st.success("Você reservou: " + ", ".join(presentes))
+render_reservation_lookup("lista")
 
 st.markdown(
     """
