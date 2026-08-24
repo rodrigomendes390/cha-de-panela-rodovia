@@ -1,5 +1,6 @@
 import base64
 import html
+import unicodedata
 
 import streamlit as st
 
@@ -20,6 +21,14 @@ def image_to_base64(path):
 HERO_DESKTOP_IMAGE = image_to_base64("assets/hero-desktop.webp")
 HERO_MOBILE_IMAGE = image_to_base64("assets/hero-mobile.webp")
 MAPS_URL = "https://www.google.com/maps/search/?api=1&query=Rua+Silva+Rabelo%2C+91"
+
+
+def normalize_name(value):
+    normalized = unicodedata.normalize("NFKD", str(value))
+    without_accents = "".join(
+        character for character in normalized if not unicodedata.combining(character)
+    )
+    return " ".join(without_accents.casefold().split())
 
 
 def inject_style():
@@ -618,7 +627,7 @@ def inject_style():
             width: calc(100% - 2rem);
             max-width: 1120px;
             box-sizing: border-box;
-            margin: 4.2rem auto .9rem;
+            margin: 2.2rem auto .9rem;
         }
 
         .product-start-title {
@@ -633,6 +642,54 @@ def inject_style():
             margin: .35rem 0 0;
             color: var(--muted);
             font-size: .88rem;
+        }
+
+        div[data-testid="stExpander"] {
+            width: calc(100% - 2rem);
+            max-width: 1088px;
+            box-sizing: border-box;
+            margin: 1.5rem auto 1rem;
+            overflow: hidden;
+            border: 1.5px solid rgba(108, 29, 198, .20);
+            border-radius: 20px;
+            background: linear-gradient(
+                135deg,
+                rgba(240, 231, 255, .78),
+                rgba(255, 240, 220, .82)
+            );
+            box-shadow: 0 12px 28px rgba(108, 29, 198, .07);
+        }
+
+        div[data-testid="stExpander"] details > summary {
+            padding: 1rem 1.2rem;
+            color: var(--purple-deep);
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        div[data-testid="stExpander"] details > summary:hover {
+            background: rgba(108, 29, 198, .045);
+        }
+
+        div[data-testid="stExpander"] summary p {
+            color: var(--purple-deep);
+            font-weight: 800;
+        }
+
+        div[data-testid="stExpanderDetails"] {
+            padding: .1rem 1.2rem 1.25rem;
+            border-top: 1px solid rgba(108, 29, 198, .11);
+        }
+
+        div[data-testid="stExpanderDetails"] [data-testid="stCaptionContainer"] p {
+            color: var(--muted);
+            font-size: .86rem;
+        }
+
+        div[data-testid="stExpanderDetails"] [data-testid="stForm"] {
+            padding: 0;
+            border: 0;
+            background: transparent;
         }
 
         div[data-testid="stTextInput"] label,
@@ -860,7 +917,8 @@ def inject_style():
         }
 
         .stButton > button,
-        button[data-testid="stBaseButton-secondary"] {
+        button[data-testid="stBaseButton-secondary"],
+        button[data-testid="stBaseButton-secondaryFormSubmit"] {
             border: 0;
             border-radius: 12px;
             min-height: 2.75rem;
@@ -872,7 +930,8 @@ def inject_style():
         }
 
         .stButton > button:hover,
-        button[data-testid="stBaseButton-secondary"]:hover {
+        button[data-testid="stBaseButton-secondary"]:hover,
+        button[data-testid="stBaseButton-secondaryFormSubmit"]:hover {
             border: 0;
             color: #ffffff !important;
             background: linear-gradient(135deg, var(--orange), var(--pink)) !important;
@@ -961,7 +1020,7 @@ def inject_style():
             }
 
             .product-start {
-                margin-top: 3rem;
+                margin-top: 2.2rem;
             }
 
             .event-step {
@@ -1168,6 +1227,38 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+with st.expander("🔎 Já escolheu? Consulte sua reserva"):
+    st.caption("Digite o mesmo nome usado na reserva para lembrar qual presente escolheu.")
+    with st.form("consultar_reserva"):
+        nome_consulta = st.text_input(
+            "Seu nome",
+            placeholder="Digite seu nome",
+            key="nome_consulta",
+        )
+        consultar = st.form_submit_button(
+            "Ver minha reserva",
+            use_container_width=True,
+        )
+
+    if consultar:
+        nome_normalizado = normalize_name(nome_consulta)
+        if len(nome_normalizado) < 2:
+            st.error("Informe o nome usado na reserva.")
+        else:
+            nomes_reservados = df["Nome"].map(normalize_name)
+            minhas_reservas = df[
+                (nomes_reservados == nome_normalizado) & reserved_mask
+            ]
+
+            if minhas_reservas.empty:
+                st.warning("Não encontramos uma reserva com esse nome.")
+            else:
+                presentes = minhas_reservas["produtos"].astype(str).tolist()
+                if len(presentes) == 1:
+                    st.success(f"Você reservou: {presentes[0]}")
+                else:
+                    st.success("Você reservou: " + ", ".join(presentes))
 
 st.markdown(
     """

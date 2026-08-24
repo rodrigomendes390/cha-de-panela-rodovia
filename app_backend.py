@@ -38,6 +38,12 @@ def load_products():
     products = pd.DataFrame(records)
     products = products.rename(columns={"link": "Link"})
 
+    # A reserva grava o nome na coluna D da planilha. Mantemos um nome de
+    # coluna estável para que a interface consiga consultar a reserva mesmo se
+    # o cabeçalho da planilha estiver escrito de outra forma.
+    if "Nome" not in products.columns:
+        products["Nome"] = products.iloc[:, 3] if products.shape[1] >= 4 else ""
+
     for column in ("Preco", "Imagem", "Link", "Reservado"):
         if column not in products.columns:
             products[column] = ""
