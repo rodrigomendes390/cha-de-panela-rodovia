@@ -59,7 +59,22 @@ def render_reservation_lookup(key_suffix, products=None):
                 st.error("Não foi possível consultar a reserva. Tente novamente.")
                 return
 
-            nomes_reservados = lookup_products["Nome"].map(normalize_name)
+            name_column = next(
+                (
+                    column
+                    for column in ("Nome", "Convidado")
+                    if column in lookup_products.columns
+                ),
+                None,
+            )
+            if name_column is None and lookup_products.shape[1] >= 4:
+                nomes_reservados = lookup_products.iloc[:, 3].map(normalize_name)
+            elif name_column is not None:
+                nomes_reservados = lookup_products[name_column].map(normalize_name)
+            else:
+                st.error("Não foi possível localizar os nomes das reservas.")
+                return
+
             reservados = (
                 lookup_products["Reservado"].astype(str).str.strip().str.lower()
                 == "sim"
