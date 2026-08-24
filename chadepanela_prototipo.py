@@ -31,6 +31,53 @@ def normalize_name(value):
     return " ".join(without_accents.casefold().split())
 
 
+def render_reservation_lookup(key_suffix, products=None):
+    with st.expander("🔎 Já escolheu? Consulte sua reserva"):
+        st.caption(
+            "Digite o mesmo nome usado na reserva para lembrar qual presente escolheu."
+        )
+        with st.form(f"consultar_reserva_{key_suffix}"):
+            nome_consulta = st.text_input(
+                "Seu nome",
+                placeholder="Digite seu nome",
+                key=f"nome_consulta_{key_suffix}",
+            )
+            consultar = st.form_submit_button(
+                "Ver minha reserva",
+                use_container_width=True,
+            )
+
+        if consultar:
+            nome_normalizado = normalize_name(nome_consulta)
+            if len(nome_normalizado) < 2:
+                st.error("Informe o nome usado na reserva.")
+                return
+
+            try:
+                lookup_products = products if products is not None else load_products()
+            except Exception:
+                st.error("Não foi possível consultar a reserva. Tente novamente.")
+                return
+
+            nomes_reservados = lookup_products["Nome"].map(normalize_name)
+            reservados = (
+                lookup_products["Reservado"].astype(str).str.strip().str.lower()
+                == "sim"
+            )
+            minhas_reservas = lookup_products[
+                (nomes_reservados == nome_normalizado) & reservados
+            ]
+
+            if minhas_reservas.empty:
+                st.warning("Não encontramos uma reserva com esse nome.")
+            else:
+                presentes = minhas_reservas["produtos"].astype(str).tolist()
+                if len(presentes) == 1:
+                    st.success(f"Você reservou: {presentes[0]}")
+                else:
+                    st.success("Você reservou: " + ", ".join(presentes))
+
+
 def inject_style():
     st.markdown(
         """
@@ -692,6 +739,22 @@ def inject_style():
             background: transparent;
         }
 
+        [role="dialog"] div[data-testid="stExpander"] {
+            width: 100%;
+            margin: .9rem 0;
+            border-radius: 14px;
+            box-shadow: none;
+        }
+
+        [role="dialog"] div[data-testid="stExpander"] details > summary {
+            padding: .75rem .9rem;
+            font-size: .9rem;
+        }
+
+        [role="dialog"] div[data-testid="stExpanderDetails"] {
+            padding: 0 .9rem .9rem;
+        }
+
         div[data-testid="stTextInput"] label,
         div[data-testid="stTextInput"] label p,
         div[data-testid="stTextInput"] [data-testid="stWidgetLabel"],
@@ -1105,6 +1168,8 @@ def explicar_dinamica():
         unsafe_allow_html=True,
     )
 
+    render_reservation_lookup("inicio")
+
     if st.button(
         "Entendi 💜",
         key="confirmar_dinamica",
@@ -1170,42 +1235,6 @@ available_count = int((~reserved_mask).sum())
 reserved_count = int(reserved_mask.sum())
 
 
-def render_reservation_lookup(key_suffix):
-    with st.expander("🔎 Já escolheu? Consulte sua reserva"):
-        st.caption(
-            "Digite o mesmo nome usado na reserva para lembrar qual presente escolheu."
-        )
-        with st.form(f"consultar_reserva_{key_suffix}"):
-            nome_consulta = st.text_input(
-                "Seu nome",
-                placeholder="Digite seu nome",
-                key=f"nome_consulta_{key_suffix}",
-            )
-            consultar = st.form_submit_button(
-                "Ver minha reserva",
-                use_container_width=True,
-            )
-
-        if consultar:
-            nome_normalizado = normalize_name(nome_consulta)
-            if len(nome_normalizado) < 2:
-                st.error("Informe o nome usado na reserva.")
-            else:
-                nomes_reservados = df["Nome"].map(normalize_name)
-                minhas_reservas = df[
-                    (nomes_reservados == nome_normalizado) & reserved_mask
-                ]
-
-                if minhas_reservas.empty:
-                    st.warning("Não encontramos uma reserva com esse nome.")
-                else:
-                    presentes = minhas_reservas["produtos"].astype(str).tolist()
-                    if len(presentes) == 1:
-                        st.success(f"Você reservou: {presentes[0]}")
-                    else:
-                        st.success("Você reservou: " + ", ".join(presentes))
-
-
 st.markdown(
     f"""
     <section class="hero">
@@ -1218,8 +1247,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-render_reservation_lookup("inicio")
 
 st.markdown(
     f"""
@@ -1273,7 +1300,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-render_reservation_lookup("lista")
+render_reservation_lookup("lista", df)
 
 st.markdown(
     """
